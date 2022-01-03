@@ -1,7 +1,40 @@
 from datetime import datetime
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
+
+
+class Display(ttk.Frame):
+    def __init__(self, master, file):
+        super().__init__()
+        self.file = file
+        self.frame = ttk.Frame(master, borderwidth=5, padding=20)
+        self.task_box = tk.Listbox(self.frame, bd=3, cursor='hand2', height=15, width=40,
+                                   activestyle='none', relief='sunken', bg='grey', font=(
+                                       "Ariel", 12))
+        self.scrollbar = tk.Scrollbar(self.frame, orient='vertical', width=10)
+        self.scrollbar.grid(row=3, column=4, sticky='ns')
+
+        self.taskbox_item_load(self.task_box, self.file)
+        self.task_box.grid(column=3, row=3)
+        self.frame.grid(column=0, row=0)
+        self.task_box.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.task_box.yview)
+
+    def taskbox_item_load(self, t_box, file):
+        with open(file, "r") as f:
+            for item in f:
+                item = item.replace("\n", "")
+                t_box.insert("end", item)
+
+
+class mn_win(ttk.Frame):
+    def __init__(self, master, file):
+        super().__init__()
+        self.file = file
+        self.my_Frame = ttk.Frame(master)
+        self.my_Frame.pack()
+        self.display = Display(self.my_Frame, self.file)
+        self.display.pack()
 
 
 class sm_win():
@@ -31,73 +64,49 @@ class sm_win():
             li_box.insert(ind, task)
             self.win.destroy()
 
-
-def addTask():
-    sm_win(task_box, 0, entry_text="", i='end', title="Add Task")
-
-
-def eddTask():
-    sm_win(task_box, 1, entry_text=task_box.get("anchor"),
-           i=task_box.curselection()[0], title="Edit Task")
-
-
-def save_change():
-    ln = task_box.size()
-    i = 0
-    with open("task.txt", "w+") as file:
-        while i < ln:
-            file.write(task_box.get(i)+'\n')
-            i += 1
-
-
-def taskbox_item_load():
-    task_list = []
-    with open("task.txt", "r") as file:
-        for item in file:
-            item = item.replace("\n", "")
-            task_box.insert("end", item)
-    return task_list
-
-
-def done_task():
-    task = task_box.get("anchor")
-    with open("complete.txt", "a+") as file:
-        file.write(task+"\n")
-
-    task_box.delete("anchor")
+# self.fr_button = ttk.Frame(self.main_frame, padding=30)
+# self.fr_button.grid(column=2, row=0)
+# self.button_add = ttk.Button(self.fr_button, text="ADD", padding=5, command=addTask)
+# self.button_del = ttk.Button(self.fr_button, text="DELETE", padding=5,
+#                         command=lambda: self.task_box.delete("anchor"))
+# self.button_edit = ttk.Button(self.fr_button, text="EDIT", padding=5, command=eddTask)
+# self.button_clear_all = ttk.Button(self.fr_button, text="CLEAR ALL", padding=5,
+#                               command=lambda: task_box.delete(0, "end"))
+# self.button_save = ttk.Button(self.fr_button, text="SAVE", padding=5, command=save_change)
+# self.button_done = ttk.Button(sef.fr_button, text="DONE", padding=5, command=done_task)
+# self.button_edit.grid(column=2, row=0, pady=5)
+# self.button_del.grid(column=2, row=1, pady=5)
+# self.button_add.grid(column=2, row=2, pady=5)
+# self.button_clear_all.grid(column=2, row=3, pady=5)
+# self.button_save.grid(column=2, row=4, pady=5)
+# self.button_done.grid(column=2, row=5, pady=5)
+# self.frame.grid(sticky='nesw')
+#
+# def addTask():
+#     sm_win(task_box, 0, entry_text="", i='end', title="Add Task")
+# def eddTask():
+#     sm_win(task_box, 1, entry_text=task_box.get("anchor"),
+#            i=task_box.curselection()[0], title="Edit Task")
+#
+#
+# def save_change():
+#     ln = task_box.size()
+#     i = 0
+#     with open("task.txt", "w+") as file:
+#         while i < ln:
+#             file.write(task_box.get(i)+'\n')
+#             i += 1
+# def done_task():
+#     task = task_box.get("anchor")
+#     with open("complete.txt", "a+") as file:
+#         file.write(task+"\n")
+#
+#     task_box.delete("anchor")
 
 
 root = tk.Tk()
 ttk.Style().configure("TButton", relief='sunken', background='black')
 root.title("To do")
 root.geometry("600x350")
-main_frame = ttk.Frame(root)
-fr_display = ttk.Frame(main_frame, borderwidth=5, padding=20)
-task_box = tk.Listbox(fr_display, bd=3, cursor='hand2', height=15, width=40,
-                      activestyle='none', relief='sunken', bg='grey', font=(
-                          "Ariel", 12))
-scrollbar = tk.Scrollbar(fr_display, orient='vertical', width=10)
-scrollbar.grid(row=3, column=4, sticky='ns')
-task_box.grid(column=3, row=3)
-taskbox_item_load()
-task_box.config(yscrollcommand=scrollbar.set)
-scrollbar.config(command=task_box.yview)
-fr_display.grid(column=0, row=0)
-fr_button = ttk.Frame(main_frame, padding=30)
-fr_button.grid(column=2, row=0)
-button_add = ttk.Button(fr_button, text="ADD", padding=5, command=addTask)
-button_del = ttk.Button(fr_button, text="DELETE", padding=5,
-                        command=lambda: task_box.delete("anchor"))
-button_edit = ttk.Button(fr_button, text="EDIT", padding=5, command=eddTask)
-button_clear_all = ttk.Button(fr_button, text="CLEAR ALL", padding=5,
-                              command=lambda: task_box.delete(0, "end"))
-button_save = ttk.Button(fr_button, text="SAVE", padding=5, command=save_change)
-button_done = ttk.Button(fr_button, text="DONE", padding=5, command=done_task)
-button_edit.grid(column=2, row=0, pady=5)
-button_del.grid(column=2, row=1, pady=5)
-button_add.grid(column=2, row=2, pady=5)
-button_clear_all.grid(column=2, row=3, pady=5)
-button_save.grid(column=2, row=4, pady=5)
-button_done.grid(column=2, row=5, pady=5)
-main_frame.grid(sticky='nesw')
+mn_win(root, "task.txt")
 root.mainloop()
