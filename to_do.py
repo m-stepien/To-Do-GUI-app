@@ -34,7 +34,9 @@ class mn_win(ttk.Frame):
         self.my_Frame = ttk.Frame(master)
         self.my_Frame.pack()
         self.display = Display(self.my_Frame, self.file)
+        self.option = Option(self.my_Frame, self.display)
         self.display.pack()
+        self.option.pack()
 
 
 class sm_win():
@@ -64,44 +66,50 @@ class sm_win():
             li_box.insert(ind, task)
             self.win.destroy()
 
-# self.fr_button = ttk.Frame(self.main_frame, padding=30)
-# self.fr_button.grid(column=2, row=0)
-# self.button_add = ttk.Button(self.fr_button, text="ADD", padding=5, command=addTask)
-# self.button_del = ttk.Button(self.fr_button, text="DELETE", padding=5,
-#                         command=lambda: self.task_box.delete("anchor"))
-# self.button_edit = ttk.Button(self.fr_button, text="EDIT", padding=5, command=eddTask)
-# self.button_clear_all = ttk.Button(self.fr_button, text="CLEAR ALL", padding=5,
-#                               command=lambda: task_box.delete(0, "end"))
-# self.button_save = ttk.Button(self.fr_button, text="SAVE", padding=5, command=save_change)
-# self.button_done = ttk.Button(sef.fr_button, text="DONE", padding=5, command=done_task)
-# self.button_edit.grid(column=2, row=0, pady=5)
-# self.button_del.grid(column=2, row=1, pady=5)
-# self.button_add.grid(column=2, row=2, pady=5)
-# self.button_clear_all.grid(column=2, row=3, pady=5)
-# self.button_save.grid(column=2, row=4, pady=5)
-# self.button_done.grid(column=2, row=5, pady=5)
-# self.frame.grid(sticky='nesw')
-#
-# def addTask():
-#     sm_win(task_box, 0, entry_text="", i='end', title="Add Task")
-# def eddTask():
-#     sm_win(task_box, 1, entry_text=task_box.get("anchor"),
-#            i=task_box.curselection()[0], title="Edit Task")
-#
-#
-# def save_change():
-#     ln = task_box.size()
-#     i = 0
-#     with open("task.txt", "w+") as file:
-#         while i < ln:
-#             file.write(task_box.get(i)+'\n')
-#             i += 1
-# def done_task():
-#     task = task_box.get("anchor")
-#     with open("complete.txt", "a+") as file:
-#         file.write(task+"\n")
-#
-#     task_box.delete("anchor")
+class Option(ttk.Frame):
+    def __init__(self, master, dis, but_pad=5):
+        super().__init__()
+        self.master = master
+        self.dis=dis
+        self.option_frame = ttk.Frame(master, padding=30)
+        self.option_frame.grid(column=2, row=0)
+        self.button_add = ttk.Button(self.option_frame, text="ADD", padding=but_pad, command=lambda: self.addTask())
+        self.button_del = ttk.Button(self.option_frame, text="DELETE", padding=but_pad, command=lambda: self.dis.task_box.delete("anchor"))
+        self.button_edit = ttk.Button(self.option_frame, text="EDIT", padding=but_pad, command=lambda: self.eddTask())
+        self.button_clear_all = ttk.Button(self.option_frame, text="CLEAR ALL", padding=but_pad, command=lambda: self.dis.task_box.delete(0, "end"))
+        self.button_save = ttk.Button(self.option_frame, text="SAVE", padding=but_pad, command=lambda: self.save_change())
+        self.button_done = ttk.Button(self.option_frame, text="DONE", padding=but_pad, command=lambda: self.done_task())
+        self.button_edit.grid(column=2, row=0, pady=5)
+        self.button_del.grid(column=2, row=1, pady=5)
+        self.button_add.grid(column=2, row=2, pady=5)
+        self.button_clear_all.grid(column=2, row=3, pady=5)
+        self.button_save.grid(column=2, row=4, pady=5)
+        self.button_done.grid(column=2, row=5, pady=5)
+        self.option_frame.grid(sticky='nesw')
+
+
+    def addTask(self):
+        sm_win(self.dis.task_box, 0, entry_text="", i='end', title="Add Task")
+
+
+    def eddTask(self):
+        sm_win(self.dis.task_box, 1, entry_text=self.dis.task_box.get("anchor"), i=self.dis.task_box.curselection()[0], title="Edit Task")
+
+
+    def save_change(self):
+        ln = self.dis.task_box.size()
+        i = 0
+        with open("task.txt", "w+") as file:
+            while i < ln:
+                file.write(self.dis.task_box.get(i)+'\n')
+                i += 1
+
+    def done_task(self):
+        task = self.dis.task_box.get("anchor")
+        with open("complete.txt", "a+") as file:
+            file.write(task+"\n")
+        self.dis.task_box.delete("anchor")
+
 
 
 root = tk.Tk()
